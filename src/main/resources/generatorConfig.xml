@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<!-- 配置生成器 -->
+<generatorConfiguration>
+
+<!-- 可以用于加载配置项或者配置文件，在整个配置文件中就可以使用${propertyKey}的方式来引用配置项
+    resource：配置资源加载地址，使用resource，MBG从classpath开始找，比如com/myproject/generatorConfig.properties        
+    url：配置资源加载地质，使用URL的方式，比如file:///C:/myfolder/generatorConfig.properties.
+    注意，两个属性只能选址一个;
+
+    另外，如果使用了mybatis-generator-maven-plugin，那么在pom.xml中定义的properties都可以直接在generatorConfig.xml中使用
+<properties resource="" url="" />
+ -->
+
+ <!-- 在MBG工作的时候，需要额外加载的依赖包
+     location属性指明加载jar/zip包的全路径
+<classPathEntry location="/Program Files/IBM/SQLLIB/java/db2java.zip" />
+  -->
+
+<!-- 
+    context:生成一组对象的环境 
+    id:必选，上下文id，用于在生成错误时提示
+    defaultModelType:指定生成对象的样式
+        1，conditional：类似hierarchical；
+        2，flat：所有内容（主键，blob）等全部生成在一个对象中；
+        3，hierarchical：主键生成一个XXKey对象(key class)，Blob等单独生成一个对象，其他简单属性在一个对象中(record class)
+    targetRuntime:
+        1，MyBatis3：默认的值，生成基于MyBatis3.x以上版本的内容，包括XXXBySample；
+        2，MyBatis3Simple：类似MyBatis3，只是不生成XXXBySample；
+    introspectedColumnImpl：类全限定名，用于扩展MBG
+-->
+
+	<context id="testTables" targetRuntime="MyBatis3" defaultModelType="flat">
+		<!-- 
+			defaultModelType:**这个属性很重要**，这个属性定义了MBG如何生成**实体类**。这个属性有以下可选值：
+			conditional:*这是默认值*,这个模型和下面的hierarchical类似，除了如果那个单独的类将只包含一个字段，将不会生成一个单独的类。 因此,如果一个表的主键只有一个字段,那么不会为该字段生成单独的实体类,会将该字段合并到基本实体类中。
+			flat:该模型为每一张表只生成一个实体类。这个实体类包含表中的所有字段。**这种模型最简单，推荐使用。**
+			hierarchical:如果表有主键,那么该模型会产生一个单独的主键实体类,如果表还有BLOB字段， 则会为表生成一个包含所有BLOB字段的单独的实体类,然后为所有其他的字段生成一个单独的实体类。 MBG会在所有生成的实体类之间维护一个继承关系。
+		-->
+		<commentGenerator>
+			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+			<property name="suppressAllComments" value="false" />
+		</commentGenerator>
+		<!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
+		<jdbcConnection 
+			driverClass="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+			connectionURL="jdbc:sqlserver://10.0.2.20:1433;databaseName=queueNumber"
+			userId="sa"
+			password="123">
+		</jdbcConnection>
+		<!-- <jdbcConnection 
+			driverClass="oracle.jdbc.driver.OracleDriver"
+			connectionURL="jdbc:oracle:thin:@10.0.2.46:1521:orcl"
+			userId="ris"
+			password="123456">
+		</jdbcConnection> -->
+		<!-- <jdbcConnection 
+			driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://10.0.2.46:3306/ris0811"
+			userId="root"
+			password="123456">
+		</jdbcConnection> -->
+		
+		<javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
+			<!-- 
+	            true：把JDBC DECIMAL 和 NUMERIC 类型解析为java.math.BigDecimal
+	            false：默认, 把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer
+	                scale>0;length>18：使用BigDecimal;
+	                scale=0;length[10,18]：使用Long；
+	                scale=0;length[5,9]：使用Integer；
+	                scale=0;length<5：使用Short；
+	         -->
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<!-- targetProject:生成PO类的位置 -->
+		<javaModelGenerator targetPackage="com.jfsoft.model"
+			targetProject=".\src">
+			<!-- enableSubPackages:是否让schema作为包的后缀 -->
+			<property name="enableSubPackages" value="false" />
+			<!-- 从数据库返回的值被清理前后的空格 -->
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+        <!-- targetProject:mapper映射文件生成的位置 -->
+		<sqlMapGenerator targetPackage="com.jfsoft.mapper" 
+			targetProject=".\src">
+			<!-- enableSubPackages:是否让schema作为包的后缀 -->
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+		<!-- targetPackage：mapper接口生成的位置 -->
+		<javaClientGenerator targetPackage="com.jfsoft.mapper" 
+			targetProject=".\src" type="XMLMAPPER">
+			<!-- enableSubPackages:是否让schema作为包的后缀 -->
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>
+		<!-- 指定数据库表 -->
+		<!-- <table schema="" tableName="SYS_ACTOR"></table>
+		<table schema="" tableName="Per_CheckInfo"></table>
+		 <table schema="" tableName="Base_Dict"></table>
+		 <table schema="" tableName="org_company"></table>
+		 <table schema="" tableName="org_dept"></table>
+		 <table schema="" tableName="org_group"></table>
+		 <table schema="" tableName="Base_Area"></table>
+		 <table schema="" tableName="SYS_USER"></table>
+		 <table schema="" tableName="sys_actor"></table>
+		 <table schema="" tableName="sys_menu"></table>
+		 <table schema="" tableName="sys_actormenu"></table>
+		 <table schema="" tableName="sys_module"></table>
+		 <table schema="" tableName="Base_Box"></table>
+		 <table schema="" tableName="Base_BoxGroupMap"></table>
+		 <table schema="" tableName="Base_GroupItem"></table>
+		 <table schema="" tableName="Base_Testitem"></table>
+		 <table schema="" tableName="Base_GroupItemMap"></table>
+		 <table schema="" tableName="Per_GroupItem"></table>
+		 <table schema="" tableName="Per_Flow"></table>
+		 <table schema="" tableName="Test_ItemResult"></table>
+		 <table schema="" tableName="sys_actordeptmap"></table>
+		 <table schema="" tableName="per_groupitem"></table>
+		 <table schema="" tableName="base_groupitem"></table>
+		 <table schema="" tableName="base_dept"></table>
+		 <table schema="" tableName="test_group"></table>
+		 <table schema="" tableName="test_illness"></table>
+		 <table schema="" tableName="base_illness"></table>
+		 <table schema="" tableName="Per_Photo"></table>
+		 <table schema="" tableName="Per_Sign"></table>
+		 <table schema="" tableName="Test_ItemImageResult"></table>
+		 <table schema="" tableName="Test_Total"></table>
+		 <table schema="" tableName="Test_HistoryTotal"></table>
+		 <table schema="" tableName="Test_Reviews"></table>
+		 <table schema="" tableName="per_testno"></table>
+		 <table schema="" tableName="Base_CommonResult"></table>
+		 <table schema="" tableName="Base_TacticsItem"></table>
+		 <table schema="" tableName="Base_TestitemRange"></table>
+		 <table schema="" tableName="Out_DetailItemMap"></table>
+		 <table schema="" tableName="SYS_Log"></table>
+		 <table schema="" tableName="test_group"></table>
+		 <table schema="" tableName="base_illnessrulemap"></table>
+		 <table schema="" tableName="base_illnessruleitem"></table>
+		 <table schema="" tableName="Sys_Parameter"></table>
+		 <table schema="" tableName="SYN_CONFIG"></table>
+		 <table schema="" tableName="SYN_PERDELETE"></table>
+		 <table schema="" tableName="SYN_TABLE"></table>
+		 <table schema="" tableName="SYN_LOG"></table>
+		 <table schema="" tableName="BASE_BARCODEGROUP"></table>
+		 <table schema="" tableName="BASE_BARCODEGROUPMAP"></table>
+		 <table schema="" tableName="BASE_BOXPERMAP"></table>
+		 <table schema="" tableName="BASE_DIAGNOSTICMAP"></table>
+		 <table schema="" tableName="BASE_GUIDEGROUP"></table>
+		 <table schema="" tableName="BASE_GUIDEGROUPMAP"></table>
+		 <table schema="" tableName="BASE_ILLNESSTYPEMAP"></table>
+		 <table schema="" tableName="BASE_REQUESTGROUP"></table>
+		 <table schema="" tableName="BASE_REQUESTGROUPMAP"></table>
+		 <table schema="" tableName="BASE_UNITILLNESS"></table>
+		 <table schema="" tableName="BASE_TACTICS"></table>
+		 -->
+		 <!-- <table schema="" tableName="SYN_LOG">
+		 	jdbcType指定的值就是生成xml后result里面对应的类型，javaType与生成的pojo里面属性类型一致
+		 	<columnOverride column="id" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+		 	<columnOverride column="SYNTYPE" jdbcType="CHAR" javaType="java.lang.String"></columnOverride>
+		 	<columnOverride column="SYNTABLE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+		 	<columnOverride column="SYNCODE" jdbcType="CLOB" javaType="java.lang.String"></columnOverride>
+		 	<columnOverride column="USERCODE" jdbcType="DECIMAL" javaType="java.math.BigDecimal"></columnOverride>
+		 	<columnOverride column="SYNDATE" jdbcType="DATE" javaType="java.util.Date"></columnOverride>
+		 	<columnOverride column="SYNAREACODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+		 </table> -->
+		<!-- <table tableName="per_checkinfo">
+			<columnOverride column="ID" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="TESTNO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="RECODENO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="NAME" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="CARDNUM" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="MEDICALCARDNUM" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="PROFESSION" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="WORKTYPE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="SELFNUM" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="JOBNUM" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="TESTTYPE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="PEISNUM" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="PAYTYPE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="BOXNAME" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="SSID" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="NATION" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ADDR" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="POSTNO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ABO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="DEGREE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="SSNO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="HEALTHCARDNUM" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="TEL" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="PHOTOID" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="SIGNID" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="NOTICE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="MEMO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="MARRIAGE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="AREACODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="OUT_RECODENO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="PRESENTADDR" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="SSSTYLE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="COMMUNITY" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="OUT_HEALTHEXAMID" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+	 	</table> -->
+	 	
+	 	<!-- <table tableName="BASE_DEPT">
+			<columnOverride column="ID" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="NAME" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="PYCODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ISUSE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ADAPTSEX" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="DEFSUMMARY" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="MEMO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="MANAGEDEPT" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ISNEWLINE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ISSORT" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="AREACODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+		</table> -->
+		
+		<!-- <table tableName="BASE_GROUPITEM">
+			<columnOverride column="ID" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="NAME" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="PYCODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ADAPTSEX" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ISUSE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ISPRINTREQUESTNOTE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="REQUESTNOTEINFO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ISPRINTGUIDELINE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="GUIDELINEINFO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="DEFSUMMARY" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="NOTDONESUMMARY" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="PRINTWAY" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="HISCODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="HISNAME" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="HISMONEY" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="MEMO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="INSPECTPROMPT" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="INSPECTADDRESS" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="MODIFYUSERCODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="AREACODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="TUBETYPE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="SAMPLETYPE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="SENDSITE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+		</table> -->
+		
+		<!-- <table tableName="TEST_TOTAL">
+			<columnOverride column="ID" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="TESTNO" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="TOTALDOCTOR" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="AUDITDOCTOR" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="TOTALCONCLUDE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="ISFLAG" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="AREACODE" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+			<columnOverride column="TOTALSUGGEST" jdbcType="VARCHAR" javaType="java.lang.String"></columnOverride>
+		</table> -->
+		
+		<!-- 
+			去掉Example后缀的pojo，并且去掉xml中id="xxxByExample"的东西
+			<table tableName="base_checkpart"
+	        	enableCountByExample="false" enableUpdateByExample="false"
+	        	enableDeleteByExample="false" enableSelectByExample="false"
+	        	selectByExampleQueryId="false">
+			</table>
+		-->
+		
+		<!--对应数据库表 mysql可以加入主键自增 字段命名 忽略某字段等
+        schema即为数据库名, tableName为对应的数据库表, domainObjectName是要生成的实体类-->
+        <table tableName="advertisement"
+        	enableCountByExample="false" enableUpdateByExample="false"
+        	enableDeleteByExample="false" enableSelectByExample="false"
+        	selectByExampleQueryId="false">
+        </table>
+		
+	</context>
+	
+</generatorConfiguration>
